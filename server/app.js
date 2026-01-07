@@ -4,7 +4,7 @@ const { Pool } = require('pg');
 require('dotenv').config();
 const app = express();
 const pool = new Pool({
-    connectionString: "postgresql://postgres:[Eshhar123315]@db.gdnndnywigwgmdcwmotv.supabase.co:5432/postgres"
+    connectionString: process.env.DATABASE_URL,
 });
 const PORT = 3000;
 
