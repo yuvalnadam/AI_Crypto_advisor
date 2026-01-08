@@ -1,5 +1,6 @@
 import { useState } from 'react'; 
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 function Register() {
   const navigate = useNavigate();
@@ -7,18 +8,38 @@ function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   
-  const handleChangeEmail = (e) => {
+  const handleChangeName = (e) => {
     setName(e.target.value);
   };
-  const handleChangeName = (e) => {
+  const handleChangeEmail = (e) => {
     setEmail(e.target.value);
   };
   const handleChangePassword = (e) => {
     setPassword(e.target.value);
   };
+  const handleSubmit = async (e) => {
+    e.preventDefault(); //the page does not render
+    
+    try {
+      const response = await axios.post('http://localhost:3000/Register', {
+        name: name,
+        email: email,
+        password: password
+      });
+  
+      console.log("res", response.data);
+      alert("You have succesfuly signed in");
+      
+      navigate('/login'); 
+  
+    } catch (error) {
+      console.error("Something went wrong", error);
+      alert("Failed connrcting to the server");
+    }
+  };
 
   return (
-    <form>
+    <form onSubmit={handleSubmit}>
       <label>Enter your name:
         <input
           type="text" 
@@ -40,6 +61,7 @@ function Register() {
           onChange={handleChangePassword}
         />
       </label>
+      <button type="submit">Sign Up</button>
     </form>
   );
 }
