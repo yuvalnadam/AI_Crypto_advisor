@@ -27,8 +27,14 @@ function Login() {
       
       if (response.status === 200) {
         localStorage.setItem('userName', response.data.user.name); //saves users name
+        localStorage.setItem('userEmail', email); //saves users email
         
-        navigate('/dashboard'); 
+        if (response.data.user.isFirstLogin) {
+          navigate('/Onboarding');
+        } 
+        else {
+          navigate('/Dashboard');
+        }
       }
   
     } catch (error) {

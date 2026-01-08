@@ -4,6 +4,7 @@ import LandingPage from './LandingPage';
 import Register from './Register';
 import Login from './Login';
 import Dashboard from './Dashboard';
+import Onboarding from './Onboarding';
 
 
 function App() {
@@ -20,6 +21,9 @@ function App() {
 
       {/*Dashboard*/}
       <Route path="/Dashboard" element={<Dashboard/>} />
+
+      {/*Onboarding*/}
+      <Route path="/Onboarding" element={<Onboarding/>} />
     </Routes>
   );
 }

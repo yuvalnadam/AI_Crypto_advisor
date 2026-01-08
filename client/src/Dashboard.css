@@ -1,0 +1,14 @@
+.dashboard-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr; 
+    grid-template-rows: auto auto;    
+    gap: 20px;                       
+    padding: 20px;
+  }
+  
+  .dashboard-box {
+    border: 1px solid #090808;
+    border-radius: 12px;
+    padding: 15px;
+    background-color: #f9f9f9;
+  }

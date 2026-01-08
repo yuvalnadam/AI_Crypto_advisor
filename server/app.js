@@ -68,15 +68,40 @@ app.post('/Login', async (req, res) => {
         const user = result.rows[0];
 
         if (user.password === password) {
+            const isFirstLogin = !user.investor_type; //marking the first login for onboard requirement 
             res.status(200).json({ 
                 message: "Login successful!", 
-                user: { id: user.id, name: user.name } 
+                user: { id: user.id, name: user.name, isFirstLogin: isFirstLogin } 
             });
         } else {
             res.status(401).json({ message: "Wrong password" });
         }
+        
     } catch (err) {
         console.error(err);
         res.status(500).send("Server Error");
+    }
+});
+
+app.put('/Onboarding', async (req, res) => {
+    const { email, investor_type, assets_interest, content_preference } = req.body;
+
+    try {
+        const query = `
+            UPDATE users 
+            SET investor_type = $1, assets_interest = $2, content_preference = $3 
+            WHERE email = $4
+        `;
+        const values = [investor_type, assets_interest, content_preference, email];
+        console.log("Values to SQL:", values);
+        const result = await pool.query(query, values);
+
+        if (result.rowCount === 0) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        res.status(200).json({ message: "Profile updated successfully" });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
     }
 });
