@@ -42,8 +42,6 @@ app.listen(PORT, (error) =>{
 
 app.post('/Register', async (req, res) => {
     const { name, email, password } = req.body;
-    console.log("קיבלתי בקשת הרשמה עבור:", email);
-
     try {
         const query = 'INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING *';
         const values = [name, email, password];
@@ -57,5 +55,28 @@ app.post('/Register', async (req, res) => {
     } catch (err) {
         console.error("Error insering user to the DB", err.message);
         res.status(500).json({ error: "Server error, could not create user" });
+    }
+});
+
+app.post('/Login', async (req, res) => {
+    const {email, password } = req.body;
+    try {
+        const result = await pool.query('SELECT * FROM users WHERE email = $1',[email]);
+        if (result.rows.length === 0) {
+            return res.status(401).json({ message: "user not found" });
+        } 
+        const user = result.rows[0];
+
+        if (user.password === password) {
+            res.status(200).json({ 
+                message: "Login successful!", 
+                user: { id: user.id, name: user.name } 
+            });
+        } else {
+            res.status(401).json({ message: "Wrong password" });
+        }
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Server Error");
     }
 });

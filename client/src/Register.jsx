@@ -30,7 +30,7 @@ function Register() {
       console.log("res", response.data);
       alert("You have succesfuly signed in");
       
-      navigate('/login'); 
+      navigate('/Login'); 
   
     } catch (error) {
       console.error("Something went wrong", error);
