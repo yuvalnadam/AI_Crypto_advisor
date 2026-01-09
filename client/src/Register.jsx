@@ -7,9 +7,14 @@ function Register() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState("");
   
   const handleChangeName = (e) => {
     setName(e.target.value);
+  };
+  const handleconfirmPassword = (e) => {
+    setConfirmPassword(e.target.value);
   };
   const handleChangeEmail = (e) => {
     setEmail(e.target.value);
@@ -19,7 +24,28 @@ function Register() {
   };
   const handleSubmit = async (e) => {
     e.preventDefault(); //the page does not render
-    
+    setError("");
+
+    //Check user details before registration
+    if (!email || !password || !confirmPassword || !name) {
+      setError("Please fill in all fields.");
+      return;
+  }
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+      setError("Please enter a valid email address");
+      return;
+  }
+  if (password.length < 6) {
+    setError("Password must be at least 6 characters long.");
+    return;
+  }
+  if (password !== confirmPassword) {
+      setError("Passwords do not match!");
+      return;
+  }
+
     try {
       const response = await axios.post('http://localhost:3000/Register', {
         name: name,
@@ -32,14 +58,14 @@ function Register() {
       
       navigate('/Login'); 
   
-    } catch (error) {
-      console.error("Something went wrong", error);
-      alert("Failed connrcting to the server");
+    } catch (err) {
+      setError(err.response?.data?.message || "Registration failed");
     }
   };
 
   return (
     <form onSubmit={handleSubmit}>
+      {error && <p style={{ color: 'red', fontWeight: 'bold' }}>{error}</p>}
       <label>Enter your name:
         <input
           type="text" 
@@ -59,6 +85,13 @@ function Register() {
           type="password" 
           value={password}
           onChange={handleChangePassword}
+        />
+      </label>
+      <label>Repeat your password:
+        <input
+          type="password" 
+          value={confirmPassword}
+          onChange={handleconfirmPassword}
         />
       </label>
       <button type="submit">Sign Up</button>

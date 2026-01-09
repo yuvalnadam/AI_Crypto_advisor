@@ -4,6 +4,7 @@ import pkg from 'pg';
 import 'dotenv/config';
 import { HfInference } from "@huggingface/inference";
 import axios from 'axios';
+import bcrypt from 'bcrypt';
 
 const { Pool } = pkg;
 
@@ -46,21 +47,28 @@ app.listen(PORT, (error) =>{
     }
 );
 
-app.post('/Register', async (req, res) => {
-    const { name, email, password } = req.body;
+app.post('/register', async (req, res) => {
+    const { name, email, password} = req.body;
+
     try {
-        const query = 'INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING *';
-        const values = [name, email, password];
+        //check if the user already exist
+        const userExists = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+        if (userExists.rows.length > 0) {
+            return res.status(400).json({ message: "User already exists with this email -> go to LOGIN" });
+        }
 
-        const result = await pool.query(query, values);
+        const saltRounds = 10;
+        const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-        res.status(201).json({
-            message: "User created successfully!",
-            user: result.rows[0]
-        });
+        await pool.query(
+            'INSERT INTO users (name, email, password) VALUES ($1, $2, $3)',[name, email, hashedPassword]
+        );
+
+        res.status(201).json({ message: "User registered successfully" });
+
     } catch (err) {
-        console.error("Error insering user to the DB", err.message);
-        res.status(500).json({ error: "Server error, could not create user" });
+        console.error(err);
+        res.status(500).json({ message: "Server error during registration" });
     }
 });
 
@@ -71,21 +79,32 @@ app.post('/Login', async (req, res) => {
         if (result.rows.length === 0) {
             return res.status(401).json({ message: "user not found" });
         } 
+        if (result.rows.length === 0) {
+            return res.status(401).json({ message: "Wrong details - try again please" });
+        }
         const user = result.rows[0];
+        const isMatch = await bcrypt.compare(password, user.password);
 
-        if (user.password === password) {
+        if (!isMatch) {
+            return res.status(401).json({ message: "Wrong Password" });
+        }
+        else
+        {
             const isFirstLogin = !user.investor_type; //marking the first login for onboard requirement 
             res.status(200).json({ 
                 message: "Login successful!", 
                 user: { id: user.id, name: user.name, isFirstLogin: isFirstLogin } 
             });
-        } else {
-            res.status(401).json({ message: "Wrong password" });
         }
+        res.status(200).json({ 
+            message: "Login successful",
+            user: user.name,
+            email: user.email 
+        });
         
     } catch (err) {
-        console.error(err);
-        res.status(500).send("Server Error");
+        console.error("Login Error:", err);
+        res.status(500).send("Server Error while login");
     }
 });
 
