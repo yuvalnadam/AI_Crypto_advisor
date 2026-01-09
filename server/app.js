@@ -1,17 +1,23 @@
-const express = require('express');
+import express from 'express';
+import cors from 'cors';
+import pkg from 'pg';
+import 'dotenv/config';
+import { HfInference } from "@huggingface/inference";
+import axios from 'axios';
 
-//connecting to Postgres
-const { Pool } = require('pg'); 
-require('dotenv').config();
+const { Pool } = pkg;
 
 const app = express();
-const cors = require('cors');
+
 app.use(cors());
 app.use(express.json());
+
+const hf = new HfInference(process.env.HF_TOKEN);
 
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
 });
+
 const PORT = 3000;
 
 app.get('/', (req, res)=>{
@@ -97,6 +103,7 @@ app.put('/Onboarding', async (req, res) => {
         const result = await pool.query(query, values);
 
         if (result.rowCount === 0) {
+            
             return res.status(404).json({ message: "User not found" });
         }
 
@@ -105,3 +112,118 @@ app.put('/Onboarding', async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 });
+
+app.get('/user-profile/:email', async (req, res) => {
+    const { email } = req.params;
+
+    try {
+        const result = await pool.query('SELECT name,investor_type, assets_interest, content_preference FROM users WHERE email = $1', [email]);
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        const user = result.rows[0];
+        
+        let memeUrl = "";
+        const interest = user.content_preference || "";
+
+        if (interest.includes('Fun')){
+            memeUrl = "/mems/fun.jpg";
+        }
+        else if (interest.includes('Social')){
+            memeUrl = "/mems/social.jpeg";
+        } 
+        else if (interest.includes('Charts')){
+            memeUrl = "/mems/charts.png";
+        }
+        //news
+        else {
+            memeUrl = "/mems/news.png";
+        } 
+
+        const userPrompt = `You are a crypto advisor. Give me an AI Insight of the Day which is a short sentence advice to a ${user.investor_type} who likes ${user.assets_interest}. Respond in English.`;
+        
+        let aiInsight = "";
+
+        try {
+            const response = await hf.chatCompletion({
+                model: "Qwen/Qwen2.5-7B-Instruct",
+                messages: [
+                    {
+                        role: "user",
+                        content: userPrompt
+                    }
+                ],
+                max_tokens: 100
+            }); 
+            
+            aiInsight = response.choices[0].message.content;
+        } catch (err) {
+            console.error("AI Error:", err.message);
+            
+            aiInsight = "Stay focused on your long-term goals and keep an eye on market trends.";
+        
+            if (user.investor_type === 'Day Trader') {
+                aiInsight = "Volatility is high today! Monitor the 15-minute charts and stick to your stop-loss strategy.";
+            } else if (user.investor_type === 'HODLer') {
+                aiInsight = "Don't let the daily noise distract you. Remember: time in the market beats timing the market. HODL tight!";
+            } else if (user.investor_type === 'Long-term Investor') {
+                aiInsight = "Fundamentals haven't changed. A great day to review your portfolio allocation and stay patient.";
+            }
+        }
+
+        res.json({
+            investor_type: user.investor_type,
+            assets_interest: user.assets_interest,
+            content_preference: user.content_preference,
+            insight: aiInsight,
+            memeUrl: memeUrl,
+            name: user.name
+        });
+
+    } catch (err) {
+        console.error("Server Error:", err);
+        res.status(500).json({ error: "Server Error" });
+    }
+});
+
+
+app.get('/market-news', async (req, res) => {
+    try {
+        const apiKey = process.env.CRYPTOPANIC_KEY;
+        
+        const response = await axios.get('https://cryptopanic.com/api/v1/posts/', {
+            params: {
+                auth_token: apiKey,
+                public: 'true' 
+            }
+        });
+
+        console.log("CryptoPanic Data Status:", response.status);
+
+        const newsItems = response.data.results.slice(0, 5).map(post => ({
+            id: post.id,
+            title: post.title,
+            url: post.url
+        }));
+
+        res.json(newsItems);
+
+    } catch (error) {
+        console.error("Detailed News Error:", error.response ? error.response.status : error.message);
+        
+        const fallbackNews = [
+            { id: 1, title: "Bitcoin Maintains $90K Despite Rising Geopolitical Tension, Morgan Stanley Enters Crypto ETF Race: Weekly Recap", url: "https://cryptopotato.com/bitcoin-maintains-90k-despite-rising-geopolitical-tension-morgan-stanley-enters-crypto-etf-race-weekly-recap/"},
+            { id: 2, title: "Ethereum, Solana report strong growth in users, revenue, and activity in 2025", url: "https://catenaa.com/markets/cryptocurrencies/ethereum-solana-report-strong-growth-in-users-revenue-and-activity-in-2025/" },
+            { id: 3, title: "New Crypto Regulation: What investors need to know", url: "https://www.cryptopolitan.com/raj-kundra-summoned-bitcoin-scam/" }
+        ];
+        res.json(fallbackNews);
+    }
+});
+
+
+
+
+
+
