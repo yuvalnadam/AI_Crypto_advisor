@@ -14,7 +14,22 @@ function Dashboard() {
   
   useEffect(() => {
     const email = localStorage.getItem('userEmail');
+    if (!email) {
+      window.location.href = '/login';
+      return;
+    }
 
+    const fetchAllUserData = async () => {
+      try {
+          const res = await axios.get(`http://localhost:3000/user-profile/${email}`);
+          
+          setName(res.data.name);
+          setInsight(res.data.insight);
+          setMeme(res.data.memeUrl);
+      } catch (err) {
+          console.error("Error fetching user data", err);
+      }
+    };
     const fetchPrices = async () => {
         try {
             const response = await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,Tether&vs_currencies=usd');
@@ -26,21 +41,6 @@ function Dashboard() {
         }
     };
 
-    const fetchInsight = async () => {
-      if (email) {
-          const res = await axios.get(`http://localhost:3000/user-profile/${email}`);
-          setInsight(res.data.insight);
-          
-      }
-    };
-    const fetchMeme = async () => {
-      if (email) {
-          const res = await axios.get(`http://localhost:3000/user-profile/${email}`);
-          console.log(res.data.memeUrl)
-          setMeme(res.data.memeUrl);
-      }
-    };
-
     const fetchNews = async () => {
       try {
           const res = await axios.get('http://localhost:3000/market-news');
@@ -50,20 +50,11 @@ function Dashboard() {
           console.log("Error fetching news", err);
       }
     };
-    const fetchName = async () => {
-      
-      const res = await axios.get(`http://localhost:3000/user-profile/${email}`);
-      setName(res.data.name);
-      
-    };
 
+    fetchAllUserData();
     fetchNews();
     fetchPrices(); 
-    fetchInsight();
-    fetchMeme();
-    fetchName();
     
-
   }, []); //only once
 
     return (
@@ -109,6 +100,5 @@ function Dashboard() {
   }
   
   export default Dashboard;
-
 
 

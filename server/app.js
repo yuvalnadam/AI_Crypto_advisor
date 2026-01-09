@@ -5,6 +5,7 @@ import 'dotenv/config';
 import { HfInference } from "@huggingface/inference";
 import axios from 'axios';
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
 const { Pool } = pkg;
 
@@ -90,18 +91,20 @@ app.post('/Login', async (req, res) => {
         }
         else
         {
-            const isFirstLogin = !user.investor_type; //marking the first login for onboard requirement 
+            const isFirstLogin = !user.investor_type;
+
+            const token = jwt.sign(
+                { userId: user.id, email: user.email },
+                process.env.JWT_SECRET,
+                { expiresIn: '24h' }
+            );
+
             res.status(200).json({ 
                 message: "Login successful!", 
-                user: { id: user.id, name: user.name, isFirstLogin: isFirstLogin } 
+                token: token,
+                user: { id: user.id, name: user.name, email: user.email, isFirstLogin: isFirstLogin } 
             });
         }
-        res.status(200).json({ 
-            message: "Login successful",
-            user: user.name,
-            email: user.email 
-        });
-        
     } catch (err) {
         console.error("Login Error:", err);
         res.status(500).send("Server Error while login");
@@ -212,14 +215,12 @@ app.get('/market-news', async (req, res) => {
     try {
         const apiKey = process.env.CRYPTOPANIC_KEY;
         
-        const response = await axios.get('https://cryptopanic.com/api/v1/posts/', {
+        const response = await axios.get('https://cryptopanic.com/api/developer/v2/posts/', {
             params: {
                 auth_token: apiKey,
-                public: 'true' 
+                public: 'true'
             }
         });
-
-        console.log("CryptoPanic Data Status:", response.status);
 
         const newsItems = response.data.results.slice(0, 5).map(post => ({
             id: post.id,

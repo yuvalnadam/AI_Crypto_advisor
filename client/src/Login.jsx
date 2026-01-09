@@ -26,6 +26,7 @@ function Login() {
       alert("You have succesfuly logged in!");
       
       if (response.status === 200) {
+        localStorage.setItem('token', response.data.token);
         localStorage.setItem('userName', response.data.user.name); //saves users name
         localStorage.setItem('userEmail', email); //saves users email
         
