@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom'; // moving between pages
 import './Dashboard.css';
 import axios from 'axios'
 import { useState, useEffect } from 'react';
+import './App.css';
 
 function Dashboard() {
 
@@ -56,49 +57,101 @@ function Dashboard() {
     fetchPrices(); 
     
   }, []); //only once
+  const handleVote = async (section, vote) => {
+    const email = localStorage.getItem('userEmail');
+    try {
+        await axios.post('http://localhost:3000/save-vote', {
+            email: email,
+            section: section,
+            vote: vote
+        });
+        alert(`Thanks for voting on ${section}!`);
+    } catch (err) {
+        console.error("Vote failed", err);
+    }
+  };
 
-    return (
-      
-    <div className="dashboard-wrapper">
+  return (
+    <div className="main-layout">
       <header className="dashboard-header">
-        <h1>Welcome back, <span className="user-name">{name}</span></h1>
-        <p>Your personalized crypto summary for today</p>
+        <h1 className="main-title">
+          Welcome back, <span className="crypto-highlight">{name}</span>
+        </h1>
+        <p className="subtitle">Your personalized crypto summary for today</p>
       </header>
+
       <div className="dashboard-grid">
-        <section className="dashboard-box-prices">
-          <h2>Coin Prices</h2>
-          <p>Bitcoin Price: ${bitcoin}</p>
-          <p>ethereum Price: ${ethereum}</p>
+        
+        <section className="standard-card">
+          <div className="card-header">
+            <h2>Coin Prices</h2>
+            <div className="vote-container">
+              <button className="vote-btn" onClick={() => handleVote('prices', 'like')}>👍</button>
+              <button className="vote-btn" onClick={() => handleVote('prices', 'dislike')}>👎</button>
+            </div>
+          </div>
+          <div className="card-content">
+            <p className="price-row">Bitcoin: <span className="price-val">${bitcoin}</span></p>
+            <p className="price-row">Ethereum: <span className="price-val">${ethereum}</span></p>
+          </div>
         </section>
   
-        <section className="dashboard-box-news">
-          <h2>News</h2>
-          <h3>Latest Market News</h3>
-          <ul>
-            {news.map((item) => (
-                <li key={item.id || item.title}> 
-                    <a href={item.url} target="_blank" rel="noopener noreferrer">
-                        {item.title || "No Title Available"}
-                    </a>
+        <section className="standard-card">
+          <div className="card-header">
+            <h2>Market News</h2>
+            <div className="vote-container">
+              <button className="vote-btn" onClick={() => handleVote('news', 'like')}>👍</button>
+              <button className="vote-btn" onClick={() => handleVote('news', 'dislike')}>👎</button>
+            </div>
+          </div>
+          <div className="card-content">
+            <ul className="news-list">
+              {news.map((item) => (
+                <li key={item.id || item.title} className="news-item"> 
+                  <a href={item.url} target="_blank" rel="noopener noreferrer">
+                    {item.title || "No Title Available"}
+                  </a>
                 </li>
-            ))}
-        </ul>
+              ))}
+            </ul>
+          </div>
         </section>
         
-        <section className="dashboard-box-ai">
-          <h2>AI Insight</h2>
-          <p>AI insight: {insight}</p>
+        <section className="standard-card">
+          <div className="card-header">
+            <h2>AI Insight</h2>
+            <div className="vote-container">
+              <button className="vote-btn" onClick={() => handleVote('insight', 'like')}>👍</button>
+              <button className="vote-btn" onClick={() => handleVote('insight', 'dislike')}>👎</button>
+            </div>
+          </div>
+          <div className="card-content">
+            <p className="insight-text">{insight}</p>
+          </div>
         </section>
         
-        <section className="dashboard-box-meme">
-          <h2>Meme</h2>
-          {meme ? <img src={meme} alt="Crypto Meme" style={{ width: '100%', borderRadius: '8px' }} /> : <p>Loading fun stuff...</p>}
+        <section className="standard-card">
+          <div className="card-header">
+            <h2>Daily Meme</h2>
+            <div className="vote-container">
+              <button className="vote-btn" onClick={() => handleVote('meme', 'like')}>👍</button>
+              <button className="vote-btn" onClick={() => handleVote('meme', 'dislike')}>👎</button>
+            </div>
+          </div>
+          <div className="card-content">
+            {meme ? (
+              <img src={meme} alt="Crypto Meme" className="meme-img" />
+            ) : (
+              <p className="loading-text">Fetching the fun...</p>
+            )}
+          </div>
         </section>
+
       </div>
     </div>
-    );
-  }
-  
-  export default Dashboard;
+  );
+}
+
+export default Dashboard;
 
 

@@ -242,6 +242,18 @@ app.get('/market-news', async (req, res) => {
     }
 });
 
+app.post('/save-vote', async (req, res) => {
+    const { email, section, vote } = req.body;
+
+    try {
+        await pool.query('INSERT INTO user_feedback (user_email, section_name, vote) VALUES ($1,$2,$3)',[email, section, vote]);
+        res.status(200).json({ message: "Vote saved!" });
+    } catch (err) {
+        console.error("Error saving vote:", err);
+        res.status(500).json({ error: "Failed to save vote" });
+    }
+});
+
 
 
 
