@@ -1,15 +1,25 @@
 import { useNavigate } from 'react-router-dom'; // moving between pages
-import './Dashboard.css';
 import axios from 'axios'
+import Swal from 'sweetalert2';
 import { useState, useEffect } from 'react';
 import './App.css';
 
 function Dashboard() {
 
   const [bitcoin, setBitcoin] = useState("");
+  const [Solana, setSolana] = useState("");
+  const [Cardano, setCardano] = useState("");
+  const [Ripple, setRipple] = useState("");
   const [ethereum, setEthereum] = useState("");
   const [insight, setInsight] = useState("");
-  const [news, setNews] = useState([]);
+
+  //const [news, setNews] = useState([]);
+  const [news, setNews] = useState([
+    { title: "Bitcoin hits new resistance level", url: "#" },
+    { title: "Ethereum 2.0 update: Everything you need to know", url: "#" },
+    { title: "Top 5 altcoins to watch this week", url: "#" },
+    { title: "Crypto market sentiment remains bullish", url: "#" }
+  ]);
   const [meme, setMeme] = useState("");
   const [name, setName] = useState("");
   
@@ -33,16 +43,20 @@ function Dashboard() {
     };
     const fetchPrices = async () => {
         try {
-            const response = await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,Tether&vs_currencies=usd');
+            const response = await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,ripple,cardano,solana&vs_currencies=usd');
             
             setBitcoin(response.data.bitcoin.usd);
             setEthereum(response.data.ethereum.usd);
+            setRipple(response.data.ripple.usd);
+            setCardano(response.data.cardano.usd);
+            setSolana(response.data.solana.usd);
+
         } catch (error) {
             console.error("Error while fatching the prices", error);
         }
     };
 
-    const fetchNews = async () => {
+    /*const fetchNews = async () => {
       try {
           const res = await axios.get('http://localhost:3000/market-news');
           setNews(res.data);
@@ -51,9 +65,11 @@ function Dashboard() {
           console.log("Error fetching news", err);
       }
     };
+      fetchNews();
+
+    */
 
     fetchAllUserData();
-    fetchNews();
     fetchPrices(); 
     
   }, []); //only once
@@ -65,11 +81,37 @@ function Dashboard() {
             section: section,
             vote: vote
         });
-        alert(`Thanks for voting on ${section}!`);
+        
+        //alerting nicely 
+        Swal.fire({
+            title: 'Thank you!',
+            text: `Your vote on ${section} has been recorded.`,
+            icon: 'success',
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            background: '#ffffff',
+            iconColor: '#14a3c3', 
+            customClass: {
+                popup: 'my-swal-popup'
+            }
+        });
+
     } catch (err) {
         console.error("Vote failed", err);
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Failed to save your vote.',
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000
+        });
     }
-  };
+};
 
   return (
     <div className="dashboard-page">
@@ -78,7 +120,6 @@ function Dashboard() {
       <div className="navbar-content">
         <div className="navbar-right">
           <img src="/logo.png" alt="Crypto Logo" className="logo" />
-          <span className="brand-name">CryptoAdvisor</span>
         </div>
         
         <div className="navbar-left">
@@ -92,31 +133,55 @@ function Dashboard() {
     </nav>
 
     <div className="main-layout">
-     
-
       <div className="dashboard-grid">
         
         <section className="standard-card">
           <div className="card-header">
-            <h2>Coin Prices</h2>
-            <div className="vote-container">
+            <h2>Coin Prices (USD) </h2>
+           
+          </div>
+          <div className="card-content">
+            <div className="prices-grid">
+              {/* 1 */}
+              <div className="coin-tile">
+                <span className="coin-tile-symbol">BTC</span>
+                <span className="coin-tile-price">{bitcoin}</span>
+              </div>
+
+              {/*  2 */}
+              <div className="coin-tile">
+                <span className="coin-tile-symbol">ETH</span>
+                <span className="coin-tile-price">{ethereum}</span>
+              </div>
+
+              {/*  3 */}
+              <div className="coin-tile">
+                <span className="coin-tile-symbol">SOL</span>
+                <span className="coin-tile-price">{Solana}</span>
+              </div>
+
+              {/*  4 */}
+              <div className="coin-tile">
+                <span className="coin-tile-symbol">XRP</span>
+                <span className="coin-tile-price">{Ripple}</span>
+              </div>
+
+              {/* 5 */}
+              <div className="coin-tile">
+                <span className="coin-tile-symbol">ADA</span>
+                <span className="coin-tile-price">{Cardano}</span>
+              </div>
+            </div>
+          </div>
+          <div className="vote-container">
               <button className="vote-btn" onClick={() => handleVote('prices', 'like')}>👍</button>
               <button className="vote-btn" onClick={() => handleVote('prices', 'dislike')}>👎</button>
             </div>
-          </div>
-          <div className="card-content">
-            <p className="price-row">Bitcoin: <span className="price-val">${bitcoin}</span></p>
-            <p className="price-row">Ethereum: <span className="price-val">${ethereum}</span></p>
-          </div>
         </section>
   
         <section className="standard-card">
           <div className="card-header">
             <h2>Market News</h2>
-            <div className="vote-container">
-              <button className="vote-btn" onClick={() => handleVote('news', 'like')}>👍</button>
-              <button className="vote-btn" onClick={() => handleVote('news', 'dislike')}>👎</button>
-            </div>
           </div>
           <div className="card-content">
             <ul className="news-list">
@@ -129,36 +194,46 @@ function Dashboard() {
               ))}
             </ul>
           </div>
+          <div className="vote-container">
+              <button className="vote-btn" onClick={() => handleVote('news', 'like')}>👍</button>
+              <button className="vote-btn" onClick={() => handleVote('news', 'dislike')}>👎</button>
+            </div>
         </section>
         
         <section className="standard-card">
-          <div className="card-header">
-            <h2>AI Insight</h2>
-            <div className="vote-container">
+          <div className="card-content insight-container">
+              <div className="ai-status">
+                  <span className="status-dot"></span>
+                  AI Engine Active
+              </div>
+              <div className="insight-bubble">
+                  <p className="insight-text">{insight}</p>
+              </div>
+              <div className="insight-footer">
+                  Generated just now
+              </div>
+          </div>
+          <div className="vote-container">
               <button className="vote-btn" onClick={() => handleVote('insight', 'like')}>👍</button>
               <button className="vote-btn" onClick={() => handleVote('insight', 'dislike')}>👎</button>
             </div>
-          </div>
-          <div className="card-content">
-            <p className="insight-text">{insight}</p>
-          </div>
         </section>
         
         <section className="standard-card">
           <div className="card-header">
             <h2>Daily Meme</h2>
-            <div className="vote-container">
+            
+          </div>
+          <div className="card-content">
+            <div className="meme-wrap">
+              {meme ? (<img src={meme} alt="Crypto Meme" className="meme-img" />) : 
+                (<p className="loading-text">Fetching the fun...</p>)}
+            </div>
+          </div>
+          <div className="vote-container">
               <button className="vote-btn" onClick={() => handleVote('meme', 'like')}>👍</button>
               <button className="vote-btn" onClick={() => handleVote('meme', 'dislike')}>👎</button>
             </div>
-          </div>
-          <div className="card-content">
-            {meme ? (
-              <img src={meme} alt="Crypto Meme" className="meme-img" />
-            ) : (
-              <p className="loading-text">Fetching the fun...</p>
-            )}
-          </div>
         </section>
 
       </div>
@@ -168,5 +243,6 @@ function Dashboard() {
 }
 
 export default Dashboard;
+
 
 

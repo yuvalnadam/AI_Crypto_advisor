@@ -1,6 +1,7 @@
 import { useState } from 'react'; 
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import Swal from 'sweetalert2';
 import './App.css';
 
 
@@ -17,18 +18,23 @@ function Onboarding() {
         setList([...list, item]);
       }
     };
-    const handleChangeType = (e) => {
-        setInvestorType(e.target.value);
-    };
-    const handleChangeAssets = (e) => {
-        setAssets(e.target.value);
-    };
-    const handleChangeContent = (e) => {
-        setContent(e.target.value);
-    };
+
     const handleSubmit = async (e) => {
       e.preventDefault(); //the page does not render
-      
+
+      //check all prerences are chosen
+      if (!investorType || assets.length === 0 || content.length === 0) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Wait a second...',
+            text: 'Please fill in all the details so we can personalize your experience!',
+            confirmButtonColor: '#14a3c3',
+            customClass: {
+                popup: 'my-swal-popup'
+            }
+        });
+        return;
+      }
       try {
         const email = localStorage.getItem('userEmail');
 
@@ -42,19 +48,31 @@ function Onboarding() {
           assets_interest: assets,
           content_preference: content
         });
-    
+        
+        //success update
+        Swal.fire({
+            icon: 'success',
+            title: 'Profile Updated!',
+            showConfirmButton: false,
+            timer: 1500
+        });
         console.log("res", response.data);        
         navigate('/Dashboard'); 
     
       } catch (error) {
-        console.error("Something went wrong", error);
-        alert("Failed connrcting to the server");
+
+        Swal.fire({
+            icon: 'error',
+            title: 'Connection Failed',
+            text: 'We could not reach the server. Please try again later.',
+            confirmButtonColor: '#ff4757'
+        });
       }
     };
   
     return (
-      <div className="login-page-wrapper">
-          {/* Navbar אחיד */}
+      <div className="boarding-page-wrapper">
+          {/* Navbar */}
           <nav className="navbar">
               <div className="navbar-content">
                   <div className="navbar-right">
@@ -66,7 +84,7 @@ function Onboarding() {
           <div className="hero-section">
               <img src="/reg.png" alt="Background" className="hero-image" />
 
-              <div className="login-overlay-card onboarding-card">
+              <div className="onboarding-card">
                   <h2 className="login-title">Personalize Your Experience</h2>
                   <p className="login-desc">Help us get to know your investment style</p>
 

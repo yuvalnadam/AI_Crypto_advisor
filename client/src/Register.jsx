@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './App.css';
+import Swal from 'sweetalert2';
 
 
 function Register() {
@@ -30,21 +31,42 @@ function Register() {
 
     //Check user details before registration
     if (!email || !password || !confirmPassword || !name) {
-      setError("Please fill in all fields");
+      Swal.fire({
+        icon: 'warning', 
+        title: 'Missing Details',
+        text: 'Please fill in all fields to create your account',
+        confirmButtonColor: '#14a3c3',
+        customClass: { popup: 'my-swal-popup' }
+      });
       return;
   }
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailRegex.test(email)) {
-      setError("Please enter a valid email address");
+    Swal.fire({
+      icon: 'warning',
+      title: 'Invalid Email',
+      text: 'Please enter a valid email address',
+      confirmButtonColor: '#14a3c3'
+    });
       return;
   }
   if (password.length < 6) {
-    setError("Password must be at least 6 characters long");
+    Swal.fire({
+      icon: 'warning',
+      title: 'Weak Password',
+      text: 'Password must be at least 6 characters',
+      confirmButtonColor: '#14a3c3'
+    });
     return;
   }
   if (password !== confirmPassword) {
-      setError("Passwords do not match");
+    Swal.fire({
+      icon: 'warning',
+      title: 'Mismatch',
+      text: 'Passwords do not match. Please try again',
+      confirmButtonColor: '#14a3c3'
+    });
       return;
   }
 
@@ -54,18 +76,32 @@ function Register() {
         email: email,
         password: password
       });
-  
-      console.log("res", response.data);
+      //success message
+      Swal.fire({
+        icon: 'success',
+        title: 'Welcome aboard!',
+        text: 'Your account has been created successfully.',
+        timer: 2000,
+        showConfirmButton: false
+      });
       
       navigate('/Login'); 
-  
+
     } catch (err) {
-      setError(err.response?.data?.message || "Registration failed");
+      
+      //failed message
+
+      Swal.fire({
+        icon: 'error',
+        title: 'Registration Failed',
+        text: err.response?.data?.message || "Something went wrong on our end.",
+        confirmButtonColor: '#ff4757'
+      });
     }
   };
 
   return (
-    <div className="login-page-wrapper">
+    <div className="login-page-container">
       {/* 1.Navbar */}
       <nav className="navbar">
         <div className="navbar-content">
@@ -129,7 +165,6 @@ function Register() {
               <button type="submit" className="login-submit-btn">Sign Up</button>
             </div>
           </form>
-  
           <div className="register-redirect">
             Already have an account? <a href="/login">Go back to login</a>
           </div>

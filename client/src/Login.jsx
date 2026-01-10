@@ -1,6 +1,7 @@
 import { useState } from 'react'; 
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import Swal from 'sweetalert2';
 import './App.css';
 
 function Login() {
@@ -29,7 +30,17 @@ function Login() {
         localStorage.setItem('token', response.data.token);
         localStorage.setItem('userName', response.data.user.name); //saves users name
         localStorage.setItem('userEmail', email); //saves users email
-        
+
+        //alerting for successful login
+        Swal.fire({
+          icon: 'success',
+          title: 'Welcome back!',
+          toast: true,
+          position: 'top-end',
+          showConfirmButton: false,
+          timer: 1500
+        });
+
         if (response.data.user.isFirstLogin) {
           navigate('/Onboarding');
         } 
@@ -40,12 +51,23 @@ function Login() {
   
     } catch (error) {
       console.error("Failed connrcting to the server", error);
+      
+      //alerting for failed login
+      Swal.fire({
+        icon: 'error',
+        title: 'Login Failed',
+        text: 'The email or password you entered is incorrect.',
+        confirmButtonColor: '#14a3c3', 
+        background: '#ffffff',
+        customClass: {
+            popup: 'my-swal-popup'
+        }
+      });
     }
   };
 
   return (
     <div className="login-page-container">
-      {/* 1. ה-Navbar נשאר תמיד למעלה */}
       <nav className="navbar">
         <div className="navbar-content">
           <div className="navbar-right">
@@ -54,17 +76,13 @@ function Login() {
         </div>
       </nav>
   
-      {/* 2. האזור המרכזי - התמונה והטופס */}
       <div className="hero-section">
-        {/* כאן תופיע התמונה הגדולה ששלחת */}
         <img src="/back.png" className="hero-image" />
   
-        {/* 3. הקופסה הלבנה שצפה על התמונה (כמו אלטשולר) */}
         <div className="login-overlay-card">
           <h2> Login </h2>
           <p className="subtitle">Enter you details to see you personalized crypto investor dashboard</p>
   
-          {/* הטופס המקורי שלך מוזרק לתוך העיצוב החדש */}
           <form onSubmit={handleSubmit} className="altshuler-form">
             <div className="input-wrapper">
               <label>Email</label>
