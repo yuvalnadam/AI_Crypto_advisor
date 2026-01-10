@@ -71,7 +71,7 @@ function Register() {
   }
 
     try {
-      const response = await axios.post('http://localhost:3000/Register', {
+      const response = await axios.post(`${API_BASE_URL}/Register`,{
         name: name,
         email: email,
         password: password

@@ -3,6 +3,7 @@ import axios from 'axios'
 import Swal from 'sweetalert2';
 import { useState, useEffect } from 'react';
 import './App.css';
+const API_URL = "https://ai-crypto-advisor-6l7n.onrender.com";
 
 function Dashboard() {
 
@@ -32,7 +33,7 @@ function Dashboard() {
 
     const fetchAllUserData = async () => {
       try {
-          const res = await axios.get(`http://localhost:3000/user-profile/${email}`);
+          const res = await axios.get(`${API_URL}/${email}`);
           
           setName(res.data.name);
           setInsight(res.data.insight);
@@ -58,7 +59,7 @@ function Dashboard() {
 
     /*const fetchNews = async () => {
       try {
-          const res = await axios.get('http://localhost:3000/market-news');
+          const res = await axios.get(`${API_BASE_URL}/market-news`);
           setNews(res.data);
       } 
       catch (err) {
@@ -76,7 +77,7 @@ function Dashboard() {
   const handleVote = async (section, vote) => {
     const email = localStorage.getItem('userEmail');
     try {
-        await axios.post('http://localhost:3000/save-vote', {
+        await axios.post(`${API_BASE_URL}/save-vote`, {
             email: email,
             section: section,
             vote: vote

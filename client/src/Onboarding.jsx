@@ -42,7 +42,7 @@ function Onboarding() {
         console.log("Sending update for email:", email);
         console.log("Data to send:", { investor_type: investorType, assets_interest: assets, content_preference: content });
         
-        const response = await axios.put('http://localhost:3000/Onboarding', {
+        const response = await axios.put(`${API_BASE_URL}/nboarding`, {
           email: email,
           investor_type: investorType,
           assets_interest: assets,
