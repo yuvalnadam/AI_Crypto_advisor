@@ -72,13 +72,27 @@ function Dashboard() {
   };
 
   return (
+    <div className="dashboard-page">
+    {/* (Navbar) */}
+    <nav className="navbar">
+      <div className="navbar-content">
+        <div className="navbar-right">
+          <img src="/logo.png" alt="Crypto Logo" className="logo" />
+          <span className="brand-name">CryptoAdvisor</span>
+        </div>
+        
+        <div className="navbar-left">
+          <span className="welcome-text">Hello, <strong>{name}</strong></span>
+          <button className="logout-btn" onClick={() => {
+              localStorage.clear();
+              window.location.href = '/login';
+          }}>Logout</button>
+        </div>
+      </div>
+    </nav>
+
     <div className="main-layout">
-      <header className="dashboard-header">
-        <h1 className="main-title">
-          Welcome back, <span className="crypto-highlight">{name}</span>
-        </h1>
-        <p className="subtitle">Your personalized crypto summary for today</p>
-      </header>
+     
 
       <div className="dashboard-grid">
         
@@ -149,6 +163,7 @@ function Dashboard() {
 
       </div>
     </div>
+  </div>
   );
 }
 

@@ -1,6 +1,8 @@
 import { useState } from 'react'; 
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import './App.css';
+
 
 function Register() {
   const navigate = useNavigate();
@@ -28,7 +30,7 @@ function Register() {
 
     //Check user details before registration
     if (!email || !password || !confirmPassword || !name) {
-      setError("Please fill in all fields.");
+      setError("Please fill in all fields");
       return;
   }
 
@@ -38,11 +40,11 @@ function Register() {
       return;
   }
   if (password.length < 6) {
-    setError("Password must be at least 6 characters long.");
+    setError("Password must be at least 6 characters long");
     return;
   }
   if (password !== confirmPassword) {
-      setError("Passwords do not match!");
+      setError("Passwords do not match");
       return;
   }
 
@@ -54,7 +56,6 @@ function Register() {
       });
   
       console.log("res", response.data);
-      alert("You have succesfuly signed in");
       
       navigate('/Login'); 
   
@@ -64,39 +65,78 @@ function Register() {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      {error && <p style={{ color: 'red', fontWeight: 'bold' }}>{error}</p>}
-      <label>Enter your name:
-        <input
-          type="text" 
-          value={name}
-          onChange={handleChangeName}
-        />
-      </label>
-      <label>Enter your email:
-        <input
-          type="text" 
-          value={email}
-          onChange={handleChangeEmail}
-        />
-      </label>
-      <label>Enter your password:
-        <input
-          type="password" 
-          value={password}
-          onChange={handleChangePassword}
-        />
-      </label>
-      <label>Repeat your password:
-        <input
-          type="password" 
-          value={confirmPassword}
-          onChange={handleconfirmPassword}
-        />
-      </label>
-      <button type="submit">Sign Up</button>
-    </form>
+    <div className="login-page-wrapper">
+      {/* 1.Navbar */}
+      <nav className="navbar">
+        <div className="navbar-content">
+          <div className="navbar-right">
+            <img src="/logo.png" alt="Crypto Logo" className="logo" />
+          </div>
+        </div>
+      </nav>
+  
+      <div className="hero-section">
+        <img src="/reg.png" alt="Register Background" className="hero-image" />
+  
+        <div className="login-overlay-card">
+          <h2 className="login-title">Create Account</h2>
+          <p className="login-desc">Start your crypto journey today</p>
+  
+          {error && <p style={{ color: 'red', fontWeight: 'bold', fontSize: '0.8rem' }}>{error}</p>}
+  
+          <form onSubmit={handleSubmit} className="altshuler-form">
+            <div className="input-wrapper">
+              <input
+                type="text" 
+                placeholder="Full Name"
+                value={name}
+                onChange={handleChangeName}
+                required
+              />
+            </div>
+  
+            <div className="input-wrapper">
+              <input
+                type="email" 
+                placeholder="Email Address"
+                value={email}
+                onChange={handleChangeEmail}
+                required
+              />
+            </div>
+  
+            <div className="input-wrapper">
+              <input
+                type="password" 
+                placeholder="Password"
+                value={password}
+                onChange={handleChangePassword}
+                required
+              />
+            </div>
+  
+            <div className="input-wrapper">
+              <input
+                type="password" 
+                placeholder="Repeat Password"
+                value={confirmPassword}
+                onChange={handleconfirmPassword}
+                required
+              />
+            </div>
+  
+            <div className="form-footer">
+              <button type="submit" className="login-submit-btn">Sign Up</button>
+            </div>
+          </form>
+  
+          <div className="register-redirect">
+            Already have an account? <a href="/login">Go back to login</a>
+          </div>
+        </div>
+      </div>
+    </div>
   );
-}
+};
 
 export default Register;
