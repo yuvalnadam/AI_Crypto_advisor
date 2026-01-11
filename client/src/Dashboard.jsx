@@ -6,6 +6,8 @@ import './App.css';
 const API_URL = "https://ai-crypto-advisor-6l7n.onrender.com";
 
 function Dashboard() {
+  
+  const navigate = useNavigate();
 
   const [bitcoin, setBitcoin] = useState("");
   const [Solana, setSolana] = useState("");
