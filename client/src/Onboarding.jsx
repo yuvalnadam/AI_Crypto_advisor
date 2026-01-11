@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import './App.css';
+const API_URL = "https://ai-crypto-advisor-6l7n.onrender.com";
+
 
 
 function Onboarding() {
@@ -42,7 +44,7 @@ function Onboarding() {
         console.log("Sending update for email:", email);
         console.log("Data to send:", { investor_type: investorType, assets_interest: assets, content_preference: content });
         
-        const response = await axios.put(`${API_BASE_URL}/nboarding`, {
+        const response = await axios.put(`${API_URL}/Onboarding`, {
           email: email,
           investor_type: investorType,
           assets_interest: assets,

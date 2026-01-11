@@ -59,7 +59,7 @@ function Dashboard() {
 
     /*const fetchNews = async () => {
       try {
-          const res = await axios.get(`${API_BASE_URL}/market-news`);
+          const res = await axios.get(`${API_URL}/market-news`);
           setNews(res.data);
       } 
       catch (err) {
@@ -77,7 +77,7 @@ function Dashboard() {
   const handleVote = async (section, vote) => {
     const email = localStorage.getItem('userEmail');
     try {
-        await axios.post(`${API_BASE_URL}/save-vote`, {
+        await axios.post(`${API_URL}/save-vote`, {
             email: email,
             section: section,
             vote: vote
