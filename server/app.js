@@ -154,7 +154,7 @@ app.get('/user-profile/:email', async (req, res) => {
             memeUrl = "https://ai-crypto-advisor-6l7n.onrender.com/mems/fun.jpg";
         }
         else if (interest.includes('Social')){
-            memeUrl = "https://ai-crypto-advisor-6l7n.onrender.com/mems/social.jpeg";
+            memeUrl = "https://ai-crypto-advisor-6l7n.onrender.com/mems/social.png";
         } 
         else if (interest.includes('Charts')){
             memeUrl = "https://ai-crypto-advisor-6l7n.onrender.com/mems/charts.png";

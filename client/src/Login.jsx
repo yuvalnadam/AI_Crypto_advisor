@@ -1,5 +1,6 @@
 import { useState } from 'react'; 
 import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import './App.css';
@@ -114,7 +115,7 @@ function Login() {
           </form>
   
           <div className="register-redirect">
-          Don't have an account? <a href="/register">Register now</a>
+          Don't have an account?  <Link to="/login">Register now</Link>
           </div>
         </div>
       </div>
