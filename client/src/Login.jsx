@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import './App.css';
+const API_URL = "https://ai-crypto-advisor-6l7n.onrender.com";
+
 
 function Login() {
   const navigate = useNavigate();

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './App.css';
+const API_URL = "https://ai-crypto-advisor-6l7n.onrender.com";
 import Swal from 'sweetalert2';
 
 

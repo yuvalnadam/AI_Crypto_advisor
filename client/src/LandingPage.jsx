@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import './App.css';
+const API_URL = "https://ai-crypto-advisor-6l7n.onrender.com";
 
 function LandingPage() {
     const navigate = useNavigate();
