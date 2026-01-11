@@ -1,5 +1,6 @@
 import { useState } from 'react'; 
 import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 import './App.css';
 const API_URL = "https://ai-crypto-advisor-6l7n.onrender.com";
@@ -168,7 +169,7 @@ function Register() {
             </div>
           </form>
           <div className="register-redirect">
-            Already have an account? <a href="/login">Go back to login</a>
+            Already have an account? <Link to="/login">Go back to login</Link>
           </div>
         </div>
       </div>

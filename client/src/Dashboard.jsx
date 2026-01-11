@@ -23,11 +23,18 @@ function Dashboard() {
   ]);
   const [meme, setMeme] = useState("");
   const [name, setName] = useState("");
+
+  const handleLogout = () => {
+    localStorage.removeItem('userEmail');
+    localStorage.removeItem('token'); 
+
+    navigate('/Login');   
+  };
   
   useEffect(() => {
     const email = localStorage.getItem('userEmail');
     if (!email) {
-      window.location.href = '/login';
+      navigate('/Login')
       return;
     }
 
@@ -126,10 +133,7 @@ function Dashboard() {
         
         <div className="navbar-left">
           <span className="welcome-text">Hello, <strong>{name}</strong></span>
-          <button className="logout-btn" onClick={() => {
-              localStorage.clear();
-              window.location.href = '/login';
-          }}>Logout</button>
+          <button className="logout-btn" onClick={() => handleLogout()}>Logout</button>
         </div>
       </div>
     </nav>
