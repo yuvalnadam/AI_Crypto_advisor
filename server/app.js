@@ -151,17 +151,17 @@ app.get('/user-profile/:email', async (req, res) => {
         const interest = user.content_preference || "";
 
         if (interest.includes('Fun')){
-            memeUrl = "https://ai-crypto-advisor-6l7n.onrender.com/mems/fun.jpg";
+            memeUrl = "/mems/fun.jpg";
         }
         else if (interest.includes('Social')){
-            memeUrl = "https://ai-crypto-advisor-6l7n.onrender.com/mems/social.png";
+            memeUrl = "/mems/social.png";
         } 
         else if (interest.includes('Charts')){
-            memeUrl = "https://ai-crypto-advisor-6l7n.onrender.com/mems/charts.png";
+            memeUrl = "/mems/charts.png";
         }
         //news
         else {
-            memeUrl = "https://ai-crypto-advisor-6l7n.onrender.com/mems/news.png";
+            memeUrl = "/mems/news.png";
         } 
 
         const userPrompt = `You are a crypto advisor. Give me an AI Insight of the Day which is a short sentence advice to a ${user.investor_type} who likes ${user.assets_interest}. Respond in English.`;

@@ -6,7 +6,7 @@ import './App.css';
 const API_URL = "https://ai-crypto-advisor-6l7n.onrender.com";
 
 function Dashboard() {
-  
+
   const navigate = useNavigate();
 
   const [bitcoin, setBitcoin] = useState("");
@@ -67,7 +67,7 @@ function Dashboard() {
         }
     };
 
-    /*const fetchNews = async () => {
+    const fetchNews = async () => {
       try {
           const res = await axios.get(`${API_URL}/market-news`);
           setNews(res.data);
@@ -76,9 +76,7 @@ function Dashboard() {
           console.log("Error fetching news", err);
       }
     };
-      fetchNews();
-
-    */
+    fetchNews();
 
     fetchAllUserData();
     fetchPrices(); 
