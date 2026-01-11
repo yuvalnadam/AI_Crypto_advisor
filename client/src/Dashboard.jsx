@@ -34,6 +34,7 @@ function Dashboard() {
     const fetchAllUserData = async () => {
       try {
           const res = await axios.get(`${API_URL}/${email}`);
+          console.log("data:", res.data);
           
           setName(res.data.name);
           setInsight(res.data.insight);
