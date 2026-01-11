@@ -33,7 +33,7 @@ function Dashboard() {
 
     const fetchAllUserData = async () => {
       try {
-          const res = await axios.get(`${API_URL}/${email}`);
+          const res = await axios.get(`${API_URL}/user-profile/${email}`);
           console.log("data:", res.data);
           
           setName(res.data.name);
