@@ -115,7 +115,7 @@ function Login() {
           </form>
   
           <div className="register-redirect">
-          Don't have an account?  <Link to="/login">Register now</Link>
+          Don't have an account?  <Link to="/Register">Register now</Link>
           </div>
         </div>
       </div>
